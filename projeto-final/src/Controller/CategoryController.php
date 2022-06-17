@@ -40,4 +40,43 @@ class CategoryController extends AbstractController
         }
         parent::render('category/add');
    }
+
+    //Metodo para remocao de uma categoria
+    public function removeAction(): void
+    {
+       $con = Connection::getConnection();
+
+       $query = "DELETE FROM tb_category WHERE id = {$_GET['id']};";
+
+       $result = $con->prepare($query)->execute();
+
+       echo "Categoria removida com sucesso!";
+    }
+
+    public function updateAction(): void
+    {
+        $id = $_GET['id'];
+
+        $con = Connection::getConnection();
+
+        if ($_POST) {
+            $newName = $_POST['name'];
+            $newDescription = $_POST['description'];
+
+            $queryUpdate = "UPDATE tb_category SET name = '{$newName}', description = '{$newDescription}' WHERE id = {$id};";
+
+            $result = $con->prepare($queryUpdate)->execute();
+
+            echo "Categoria atualizada com sucesso!";
+        }
+
+        $query = "SELECT * FROM tb_category WHERE id = {$id};";
+
+        $result = $con->prepare($query);
+        $result->execute();
+
+        $data = $result->fetch(\PDO::FETCH_ASSOC);
+
+        parent::render('category/edit', $data);
+    }
 }
